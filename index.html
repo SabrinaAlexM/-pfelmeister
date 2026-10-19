@@ -140,6 +140,12 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .lehre{background:var(--leaf);color:#F4F7EC;border-radius:18px;padding:1.4rem;margin-top:1.5rem}
 .lehre ol{margin:.4rem 0 0;padding-left:1.3rem}
 .lehre li{margin-bottom:.4rem}
+.foot{max-width:880px;margin:0 auto;padding:0 1rem 2rem;color:var(--soft);font-size:.85rem;display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+.imp-body{max-height:65vh;overflow-y:auto;padding:1rem 1.2rem;font-size:.92rem}
+.imp-body h4{margin:1.1em 0 .3em;font-size:.95rem}
+.imp-body h4:first-child{margin-top:0}
+.imp-body address{font-style:normal}
+.imp-body a{color:inherit}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -150,6 +156,23 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 </header>
 <div class="juice"><i id="juice"></i></div>
 <main id="app"></main>
+<footer class="foot"><button class="link" id="openImp" type="button">Impressum &amp; Datenschutz</button><span>CC BY 4.0</span></footer>
+
+<dialog id="imp" aria-labelledby="impTitle">
+  <div class="agb-head"><strong id="impTitle">Impressum</strong><button class="btn alt" id="impClose" style="padding:.3rem 1rem">Schliessen</button></div>
+  <div class="imp-body">
+    <h4>Herausgeberin und verantwortlich für den Inhalt</h4>
+    <address>Sabrina Meier<br>Dozentin Medien und Informatik<br>Co-Leiterin Fachstelle Schule und Digitalität<br>Pädagogische Hochschule Thurgau<br>Unterer Schulweg 3<br>CH-8280 Kreuzlingen<br>E-Mail: <a href="mailto:sabrina.meier@phtg.ch">sabrina.meier@phtg.ch</a></address>
+    <h4>Entstehung</h4>
+    <p>«Öpfelmeister» wurde an der Fachstelle Schule und Digitalität der Pädagogischen Hochschule Thurgau entwickelt. Inspiriert ist es vom Spiel «CheeseMaster» aus der SRF-Serie «Dataland», das zeigte, was ein harmloses Käsespiel über seine Spielerinnen und Spieler preisgibt (<a href="https://www.srf.ch/news/schweiz/dataland-schweiz-cheesemaster-was-ein-harmloses-kaese-spiel-ueber-sie-preisgibt" target="_blank" rel="noopener">Artikel auf srf.ch</a>). Weil das Originalspiel nicht mehr verfügbar ist, haben wir uns erlaubt, eine ähnliche Version nachzubauen. Sie soll sichtbar machen, welche Daten beim Spielen unbemerkt erhoben und ausgewertet werden können. Gestaltung, Texte und Programmierung sind eigenständig. «Öpfelmeister» ist kein Angebot von SRF.</p>
+    <h4>Datenschutz</h4>
+    <p>Das Spiel speichert nichts und überträgt nichts. Es gibt keine Anmeldung, keine Cookies, keine Speicherung im Browser und kein Tracking. Alle Messwerte liegen nur im Arbeitsspeicher des geöffneten Browser-Tabs und werden beim Schliessen gelöscht. Die Standortfreigabe ist freiwillig, der Standort wird nur im Browser ausgewertet. Es werden keine Schriften oder Bibliotheken von Drittanbietern geladen. Der Hosting-Anbieter der Webseite erfasst wie bei jeder Webseite technische Zugriffsdaten wie die IP-Adresse.</p>
+    <h4>Lizenz</h4>
+    <p>«Öpfelmeister» von Sabrina Meier, PH Thurgau, steht unter der Lizenz <a href="https://creativecommons.org/licenses/by/4.0/deed.de" target="_blank" rel="noopener">CC BY 4.0</a>. Du darfst es nutzen, verändern und weitergeben, wenn du die Urheberin nennst und angibst, ob du etwas geändert hast.</p>
+    <h4>Haftung für Links</h4>
+    <p>Für die Inhalte verlinkter externer Seiten sind ausschliesslich deren Betreiberinnen und Betreiber verantwortlich.</p>
+  </div>
+</dialog>
 
 <dialog id="agb" aria-labelledby="agbTitle">
   <div class="agb-head"><strong id="agbTitle">Nutzungsbedingungen Öpfelmeister</strong><button class="btn alt" id="agbClose" style="padding:.3rem 1rem">Schliessen</button></div>
@@ -273,6 +296,8 @@ function start(){
 let agbOpenedAt = 0;
 function openAgb(){ D.agbOpened = true; agbOpenedAt = Date.now(); $('#agb').showModal(); }
 $('#agbClose').onclick = () => $('#agb').close();
+$('#openImp').onclick = () => $('#imp').showModal();
+$('#impClose').onclick = () => $('#imp').close();
 $('#agb').addEventListener('close', () => { D.agbMs += Date.now() - agbOpenedAt; });
 const SECRET = 'Wer bis hierhin gelesen hat, klickt auf diesen Satz und bekommt 1000 Äpfel pro Minute zusätzlich.';
 const secretHit = () => { if (!D.agbSecret){ D.agbSecret = true; addApm(1000); $('#secret').textContent = 'Gefunden. 1000 Äpfel pro Minute sind gutgeschrieben.'; } };

@@ -4,7 +4,9 @@ Ein kleines Browserspiel über versteckte Datenerhebung. Die Spielenden helfen e
 
 Das Spiel ist als Einstieg in Lehrveranstaltungen und Weiterbildungen zu Datenschutz, Tracking und Dark Patterns gedacht. Zielgruppe sind Studierende und Lehrpersonen.
 
-Die Idee stammt vom Spiel «CheeseMaster» aus der SRF-Serie «Dataland», das nicht mehr online ist. Öpfelmeister ist ein eigenständiger Nachbau mit eigener Gestaltung und steht in keiner Verbindung zu SRF.
+## Entstehung
+
+Öpfelmeister ist inspiriert vom Spiel «CheeseMaster» aus der SRF-Serie «Dataland», das zeigte, was ein harmloses Käsespiel über seine Spielerinnen und Spieler preisgibt ([Artikel auf srf.ch](https://www.srf.ch/news/schweiz/dataland-schweiz-cheesemaster-was-ein-harmloses-kaese-spiel-ueber-sie-preisgibt)). Weil das Originalspiel nicht mehr verfügbar ist, haben wir uns erlaubt, eine ähnliche Version nachzubauen. Sie soll sichtbar machen, welche Daten beim Spielen unbemerkt erhoben und ausgewertet werden können. Gestaltung, Texte und Programmierung sind eigenständig. Öpfelmeister ist kein Angebot von SRF.
 
 ## Die Stationen
 
@@ -58,9 +60,16 @@ Alles steckt im `<script>`-Teil von `index.html`:
 
 Die Ableitungen sind absichtlich einfach gebaut und für einzelne Personen oft falsch. Die Altersformel ist eine grobe Faustregel, der Farbtest ist kein medizinischer Test und die Händigkeit lässt sich mit Maus oder Trackpad kaum bestimmen. Genau das ist Teil des Lerneffekts: Auch falsche Profile werden in der Praxis weiterverwendet.
 
-## Autorin
+## Impressum
 
-Sabrina Meier, Fachstelle Schule und Digitalität, Pädagogische Hochschule Thurgau
+Sabrina Meier  
+Dozentin Medien und Informatik  
+Co-Leiterin Fachstelle Schule und Digitalität  
+Pädagogische Hochschule Thurgau  
+Unterer Schulweg 3, CH-8280 Kreuzlingen  
+sabrina.meier@phtg.ch
+
+Das Impressum mit Datenschutzhinweisen ist auch im Spiel verlinkt (Fusszeile).
 
 ## Lizenz
 
