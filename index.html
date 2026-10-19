@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Öpfelmeister – die Mosterei braucht dich</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>">
+<style>
+:root{
+  --bg:#EAF0DD; --paper:#FFFFFF; --ink:#16261B; --soft:#4C5E50;
+  --leaf:#1F3B2C; --leaf2:#2E5A3F; --red:#C42B3A; --gold:#E8B23A; --wood:#B98552; --wood2:#9A6A3D;
+  --line:#C9D5B8; --ok:#2E7D4A; --bad:#B3261E; --sky:#DCEBF0;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121D16; --paper:#1B2A21; --ink:#E6EEDB; --soft:#A9B9A6; --line:#33473A;
+    --leaf:#0E1A13; --leaf2:#3F7A55; --sky:#1A2B30; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{--bg:#121D16;--paper:#1B2A21;--ink:#E6EEDB;--soft:#A9B9A6;--line:#33473A;--leaf:#0E1A13;--leaf2:#3F7A55;--sky:#1A2B30;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3,.brand,.big{font-family:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold",system-ui,sans-serif;letter-spacing:-.01em}
+h1{font-size:clamp(2.4rem,7vw,4rem);line-height:1.02;margin:.2em 0 .3em;font-weight:900}
+h2{font-size:1.6rem;line-height:1.15;margin:0;font-weight:850;display:flex;align-items:center;gap:.5rem}
+h2 svg{width:1.4em;height:1.4em;flex:none}
+h3{font-size:1.15rem;margin:0 0 .3em}
+p{margin:0 0 .9em;max-width:62ch}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--leaf);color:#F4F7EC;
+  display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--leaf)}
+.brand{font-weight:900;font-size:1.2rem;display:flex;align-items:center;gap:.4rem}
+.brand svg{width:1.6rem;height:1.6rem}
+.meter{margin-left:auto;text-align:right;font-variant-numeric:tabular-nums;line-height:1.1}
+.meter b{font-size:1.4rem;color:var(--gold)}
+.meter small{display:block;opacity:.8;font-size:.75rem}
+.juice{height:6px;background:var(--leaf)}
+.juice i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#F5D77A);transition:width .5s}
+
+main{max-width:880px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.4rem}
+.btn{background:var(--red);color:#fff;border:0;border-radius:999px;padding:.8rem 1.5rem;font-weight:700;font-size:1.05rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.green{background:var(--leaf2)}
+.row{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}
+.muted{color:var(--soft)}
+.link{background:none;border:0;padding:0;color:inherit;text-decoration:underline;text-underline-offset:3px}
+
+/* Start mit Apfelbaum */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:1.5rem;align-items:center}
+.treeart{width:100%;max-width:380px;justify-self:center}
+.treeart .hang{transform-box:fill-box;transform-origin:50% 0;animation:sway 3.2s ease-in-out infinite}
+.treeart .hang:nth-of-type(2n){animation-delay:-1.4s}
+.treeart .hang:nth-of-type(3n){animation-delay:-.6s;animation-duration:2.7s}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.stations{list-style:none;padding:0;margin:1rem 0 1.4rem;display:grid;gap:.45rem}
+.stations li{display:flex;gap:.6rem;align-items:center}
+.stations svg{width:1.4rem;height:1.4rem;flex:none}
+.check{display:flex;gap:.6rem;align-items:flex-start;margin:0 0 1rem}
+.check input{width:1.3rem;height:1.3rem;margin-top:.15rem;accent-color:var(--leaf2)}
+@media (max-width:680px){.hero{grid-template-columns:1fr}.treeart{max-width:260px;order:-1}}
+
+dialog{border:0;border-radius:18px;padding:0;max-width:640px;width:calc(100% - 2rem);background:var(--paper);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,14,.55)}
+.agb-head{padding:1rem 1.2rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.agb-body{max-height:60vh;overflow-y:auto;padding:1rem 1.2rem;font-size:.85rem;line-height:1.5;color:var(--soft)}
+.agb-body h4{color:var(--ink);margin:1em 0 .3em;font-size:.9rem}
+.secret:hover{cursor:pointer}
+
+.stage-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.8rem}
+.step{color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.task,.toast{max-width:none}
+.task{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:.7rem 1rem;margin:0 0 1rem;font-size:.95rem}
+.toast{min-height:1.6em;font-weight:700;margin:.6rem 0 0;text-align:center}
+
+/* Ernten */
+.treewrap{position:relative;max-width:440px;margin:0 auto;padding:clamp(1.4rem,6vw,2rem) clamp(1.4rem,6vw,1.8rem) clamp(.9rem,3vw,1.2rem)}
+.crown,.tree{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.4rem,1.6vw,.8rem)}
+.crown{position:absolute;inset:inherit;padding:inherit;inset:0}
+.crown::before{content:"";position:absolute;inset:16%;background:var(--leaf2);border-radius:24%}
+.crown i{position:relative;aspect-ratio:1;border-radius:50%;background:var(--leaf2);transform:scale(1.42)}
+.tree{position:relative;touch-action:manipulation}
+.spot{aspect-ratio:1;border-radius:50%;background:rgba(0,0,0,.18);display:grid;place-items:center;border:0;padding:0}
+.spot svg{width:82%;height:82%;animation:pop .14s ease-out}
+.trunk{width:56px;height:50px;background:var(--wood2);margin:0 auto;border-radius:0 0 8px 8px}
+@keyframes pop{from{transform:scale(.3)}to{transform:scale(1)}}
+
+/* Karte und Quiz */
+.map{width:100%;max-width:640px;display:block;margin:.6rem auto;cursor:crosshair;touch-action:none;background:var(--sky);border-radius:14px}
+.map .land{fill:#CFE0B4;stroke:var(--leaf2);stroke-width:1.6;stroke-linejoin:round}
+.map .lake{fill:#8DBCD3;stroke:#6A9FB9;stroke-width:.8;stroke-linejoin:round}
+.map .city{fill:var(--leaf)}
+.map text{font-size:11px;fill:#16261B;pointer-events:none}
+.opts{display:grid;gap:.6rem;margin-top:1rem}
+.opt{text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;color:var(--ink)}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--bg))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+
+/* Halbieren */
+.board{position:relative;height:min(380px,58vh);max-width:560px;margin:0 auto;border-radius:28px;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;
+  background:repeating-linear-gradient(90deg,var(--wood) 0 38px,#C08F5E 38px 41px,var(--wood) 41px 80px,#AE7A47 80px 82px)}
+.board .apple{position:absolute;width:150px;height:150px;left:50%;top:50%;margin:-75px 0 0 -75px;pointer-events:none}
+.board .half{position:absolute;inset:0;transition:transform .55s ease-out,opacity .55s}
+.board .half svg{width:100%;height:100%}
+.trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+
+/* Qualitätskontrolle */
+.qc{display:grid;place-items:center;gap:1rem}
+.qc svg{width:min(240px,64vw)}
+
+/* Auswertung */
+.reveal{animation:fade .8s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.stamp{display:inline-block;border:4px solid var(--red);color:var(--red);font-weight:900;padding:.2rem .8rem;border-radius:8px;transform:rotate(-4deg);font-size:1.1rem;margin-bottom:1rem}
+.facts{display:grid;gap:1rem;margin:1.5rem 0}
+.fact{background:var(--paper);border:1px solid var(--line);border-left:8px solid var(--red);border-radius:12px;padding:1rem 1.2rem}
+.fact .src{display:flex;align-items:center;gap:.4rem;color:var(--soft);font-size:.85rem}
+.fact .src svg{width:1.1rem;height:1.1rem}
+.fact .big{font-size:1.45rem;font-weight:850;margin:.1rem 0 .5rem}
+.fact dl{display:grid;grid-template-columns:auto 1fr;gap:.2rem .8rem;margin:0 0 .6rem;font-size:.92rem}
+.fact dt{color:var(--soft)}
+.fact dd{margin:0}
+.verdict{display:flex;gap:.5rem;align-items:center;font-size:.9rem;flex-wrap:wrap}
+.verdict button{border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:.25rem .8rem}
+.verdict button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tally{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + .8rem);background:var(--leaf);color:#F4F7EC;border-radius:16px;padding:.9rem 1.2rem;margin:1rem 0;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.tally b{color:var(--gold);font-size:1.2rem}
+.passive{columns:2 260px;font-size:.92rem;margin:0;padding-left:1.1rem}
+.passive li{break-inside:avoid;margin-bottom:.3rem}
+.lehre{background:var(--leaf);color:#F4F7EC;border-radius:18px;padding:1.4rem;margin-top:1.5rem}
+.lehre ol{margin:.4rem 0 0;padding-left:1.3rem}
+.lehre li{margin-bottom:.4rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="brand" id="brand">Öpfelmeister</div>
+  <div class="meter"><b id="apm">0</b> Äpfel pro Minute<small id="station">Mosterei bereit</small></div>
+</header>
+<div class="juice"><i id="juice"></i></div>
+<main id="app"></main>
+
+<dialog id="agb" aria-labelledby="agbTitle">
+  <div class="agb-head"><strong id="agbTitle">Nutzungsbedingungen Öpfelmeister</strong><button class="btn alt" id="agbClose" style="padding:.3rem 1rem">Schliessen</button></div>
+  <div class="agb-body">
+    <h4>1. Geltungsbereich</h4>
+    <p>Diese Nutzungsbedingungen regeln die Nutzung des Online-Spiels «Öpfelmeister» (nachfolgend «Spiel»). Mit dem Start des Spiels anerkennt die spielende Person (nachfolgend «Nutzerin» oder «Nutzer») diese Bedingungen in der jeweils gültigen Fassung.</p>
+    <h4>2. Leistungsumfang</h4>
+    <p>Das Spiel besteht aus mehreren Minispielen rund um die Verarbeitung von Äpfeln. Ein Anspruch auf Verfügbarkeit, eine bestimmte Spieldauer oder einen bestimmten Spielstand besteht nicht. Die Betreiberin kann Inhalte jederzeit ohne Ankündigung ändern, ergänzen oder entfernen.</p>
+    <h4>3. Erhebung von Interaktionsdaten</h4>
+    <p>Zur Verbesserung des Spielerlebnisses werden während des Spiels Interaktionsdaten erfasst. Dazu gehören insbesondere Reaktionszeiten, Fehlgriffe, Bewegungsrichtungen von Eingaben, Antwortzeiten, Standortangaben, Entscheidungen in Prüfaufgaben, Wechsel zwischen Browser-Tabs sowie technische Angaben des verwendeten Endgeräts. Aus diesen Daten können Merkmale der Nutzerin oder des Nutzers abgeleitet werden, etwa Alter, Händigkeit, Aufenthaltsort, Persönlichkeitsmerkmale oder Besonderheiten der Wahrnehmung.</p>
+    <h4>4. Verwendung der Daten</h4>
+    <p>Abgeleitete Merkmale können zur Personalisierung von Inhalten, zur Erstellung von Nutzungsprofilen sowie für statistische Zwecke verwendet werden. Eine Prüfung der Richtigkeit abgeleiteter Merkmale findet nicht statt. Die Nutzerin oder der Nutzer hat keinen Anspruch darauf, abgeleitete Merkmale einzusehen oder zu berichtigen, soweit gesetzlich nichts anderes vorgeschrieben ist.</p>
+    <h4>5. Haftung</h4>
+    <p>Die Betreiberin haftet nicht für Schäden, die durch die Nutzung des Spiels entstehen, insbesondere nicht für verschütteten Most, verlorene Spielstände oder Fehleinschätzungen von Apfelqualität. Vorbehalten bleibt die Haftung für grobe Fahrlässigkeit und Vorsatz.</p>
+    <h4>6. Geistiges Eigentum</h4>
+    <p>Sämtliche Inhalte des Spiels, insbesondere Grafiken, Texte und Spielmechaniken, sind urheberrechtlich geschützt. Jede Verwendung ausserhalb des Spiels bedarf der vorgängigen schriftlichen Zustimmung der Betreiberin.</p>
+    <h4>7. Änderungen</h4>
+    <p>Die Betreiberin behält sich vor, diese Nutzungsbedingungen jederzeit anzupassen. Die jeweils aktuelle Fassung gilt ab ihrer Veröffentlichung. Die weitere Nutzung des Spiels gilt als Zustimmung zu den geänderten Bedingungen.</p>
+    <h4>8. Schlussbestimmungen</h4>
+    <p>Sollten einzelne Bestimmungen unwirksam sein, bleibt die Gültigkeit der übrigen Bestimmungen unberührt. Es gilt Schweizer Recht. <span class="secret" id="secret" tabindex="0">Wer bis hierhin gelesen hat, klickt auf diesen Satz und bekommt 1000 Äpfel pro Minute zusätzlich.</span> Gerichtsstand ist Frauenfeld.</p>
+  </div>
+</dialog>
+
+<script>
+(() => {
+/* Alle Daten bleiben im Arbeitsspeicher dieses Tabs. Nichts wird gespeichert oder verschickt. */
+const fresh = () => ({
+  started: Date.now(),
+  agbOpened:false, agbMs:0, agbSecret:false,
+  rts:[], misses:0, rottenHits:0, rottenTotal:0,
+  loc:null, quizRight:0, quizTotal:0, answerMs:[],
+  swipes:[], cuts:0,
+  qc:{normal:0,normalOk:0,blank:0,blankOk:0,crit:0,critKeep:0},
+  pointerTypes:{}, tabSwitches:0, travelPx:0
+});
+let D = fresh(), apm = 0;
+const app = document.getElementById('app');
+const $ = s => document.querySelector(s);
+const rand = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const notePointer = e => { const t = e.pointerType || 'mouse'; D.pointerTypes[t] = (D.pointerTypes[t]||0) + 1; };
+const median = a => { const s=[...a].sort((x,y)=>x-y); return s.length ? s[Math.floor(s.length/2)] : 0; };
+
+/* Hintergrund-Messungen, die in den Bedingungen erwähnt sind */
+document.addEventListener('visibilitychange', () => { if (document.hidden) D.tabSwitches++; });
+let last = null;
+document.addEventListener('pointermove', e => { if (last) D.travelPx += Math.hypot(e.clientX-last[0], e.clientY-last[1]); last = [e.clientX,e.clientY]; }, {passive:true});
+document.addEventListener('pointerleave', () => last = null);
+
+function addApm(n){
+  apm += n;
+  $('#apm').textContent = apm.toLocaleString('de-CH');
+  $('#juice').style.width = Math.min(100, apm/40) + '%';
+}
+const station = t => $('#station').textContent = t;
+
+/* ---------- Grafiken ---------- */
+function apple({fill='#C42B3A', rotten=false, sticker=''}={}){
+  const body = rotten ? '#8B6A3E' : fill;
+  const extra = rotten ? '<circle cx="36" cy="55" r="7" fill="#4E3820"/><circle cx="62" cy="68" r="5" fill="#4E3820"/><circle cx="58" cy="44" r="4" fill="#4E3820"/><path d="M66 50c4-4 9-2 9 2" stroke="#E9E0C8" stroke-width="3" fill="none" stroke-linecap="round"/>'
+                       : '<ellipse cx="34" cy="44" rx="7" ry="12" fill="#fff" opacity=".28" transform="rotate(-20 34 44)"/>';
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 28C30 12 6 26 11 53c4 26 23 41 39 33 16 8 35-7 39-33C94 26 70 12 50 28z" fill="${body}"/>
+    <path d="M50 29c0-10 3-18 8-23" stroke="#5A3A1E" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M55 18c9-10 22-9 27-5-7 9-19 11-27 5z" fill="#3F7A35"/>${extra}${sticker}</svg>`;
+}
+function appleTop(fill){
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="44" fill="${fill}"/><circle cx="50" cy="50" r="44" fill="none" stroke="#00000022" stroke-width="2"/>
+    <ellipse cx="34" cy="34" rx="12" ry="7" fill="#fff" opacity=".3" transform="rotate(-35 34 34)"/>
+    <circle cx="50" cy="50" r="5" fill="#5A3A1E" opacity=".5"/><path d="M50 50l9-6" stroke="#5A3A1E" stroke-width="3.5" stroke-linecap="round"/></svg>`;
+}
+const ICON = {
+  harvest: apple({fill:'#C42B3A'}),
+  quiz: apple({fill:'#E8B23A'}),
+  cut: appleTop('#D23A3A'),
+  qc: apple({fill:'#7DA83A'}),
+  agb: apple({fill:'#9A6A3D'}),
+  web: apple({fill:'#4C5E50'})
+};
+$('#brand').insertAdjacentHTML('afterbegin', ICON.harvest);
+
+function treeArt(){
+  const spots = [[95,95,'#C42B3A'],[150,70,'#D9472F'],[205,100,'#C42B3A'],[120,140,'#E8B23A'],[180,145,'#C42B3A'],[230,150,'#7DA83A'],[70,150,'#D9472F'],[150,185,'#C42B3A']];
+  return `<svg class="treeart" viewBox="0 0 300 320" role="img" aria-label="Apfelbaum voller Äpfel">
+    <ellipse cx="150" cy="300" rx="120" ry="12" fill="#00000018"/>
+    <path d="M138 300c4-40 2-80-6-110h36c-8 30-10 70-6 110z" fill="#8A5A33"/>
+    <path d="M150 200l-34-34M152 205l36-30" stroke="#8A5A33" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="150" cy="115" r="92" fill="#2E5A3F"/><circle cx="85" cy="135" r="55" fill="#2E5A3F"/><circle cx="218" cy="135" r="55" fill="#2E5A3F"/>
+    <circle cx="120" cy="80" r="40" fill="#3F7A55"/><circle cx="195" cy="95" r="32" fill="#3F7A55"/>
+    ${spots.map(([x,y,f])=>`<g class="hang"><g transform="translate(${x-17} ${y-12}) scale(.34)">${apple({fill:f}).replace(/<\/?svg[^>]*>/g,'')}</g></g>`).join('')}
+    <g transform="translate(212 262) scale(.38)">${apple({fill:'#C42B3A'}).replace(/<\/?svg[^>]*>/g,'')}</g>
+    <g transform="translate(70 270) scale(.3) rotate(25 50 50)">${apple({rotten:true}).replace(/<\/?svg[^>]*>/g,'')}</g>
+  </svg>`;
+}
+const head = (icon, title, step) => `<div class="stage-head"><h2>${ICON[icon]}${title}</h2>${step?`<span class="step" id="r">${step}</span>`:''}</div>`;
+
+/* ---------- Start ---------- */
+function start(){
+  station('Mosterei bereit');
+  app.innerHTML = `
+  <section class="hero">
+    <div>
+      <h1>Die Mosterei braucht dich.</h1>
+      <p>Die Bäume hängen voll und die Presse läuft. Hilf mit, damit möglichst viele Äpfel pro Minute zu Most werden. Vier Stationen, etwa fünf Minuten.</p>
+      <ul class="stations">
+        <li>${ICON.harvest}Ernten: nur die guten Äpfel pflücken</li>
+        <li>${ICON.quiz}Marketing: ein kurzes Apfelquiz</li>
+        <li>${ICON.cut}Halbieren: Äpfel mit einem Schnitt teilen</li>
+        <li>${ICON.qc}Qualitätskontrolle: Kleber prüfen</li>
+      </ul>
+      <label class="check"><input type="checkbox" id="accept"><span>Ich akzeptiere die <button class="link" id="openAgb" type="button">Nutzungsbedingungen</button>.</span></label>
+      <button class="btn" id="go" disabled>Los geht’s</button>
+    </div>
+    ${treeArt()}
+  </section>`;
+  $('#accept').onchange = e => $('#go').disabled = !e.target.checked;
+  $('#openAgb').onclick = openAgb;
+  $('#go').onclick = game1Intro;
+}
+let agbOpenedAt = 0;
+function openAgb(){ D.agbOpened = true; agbOpenedAt = Date.now(); $('#agb').showModal(); }
+$('#agbClose').onclick = () => $('#agb').close();
+$('#agb').addEventListener('close', () => { D.agbMs += Date.now() - agbOpenedAt; });
+const SECRET = 'Wer bis hierhin gelesen hat, klickt auf diesen Satz und bekommt 1000 Äpfel pro Minute zusätzlich.';
+const secretHit = () => { if (!D.agbSecret){ D.agbSecret = true; addApm(1000); $('#secret').textContent = 'Gefunden. 1000 Äpfel pro Minute sind gutgeschrieben.'; } };
+$('#secret').onclick = secretHit;
+$('#secret').onkeydown = e => { if (e.key==='Enter') secretHit(); };
+
+/* ---------- Station 1: Ernten ---------- */
+function harvestOrder(){
+  // 10 gute, 6 faule; höchstens 3 gute oder 2 faule nacheinander
+  for (let tries=0; tries<500; tries++){
+    const a = shuffle([...Array(10).fill(false), ...Array(6).fill(true)]);
+    let ok = true, run = 1;
+    for (let i=1;i<a.length;i++){ run = a[i]===a[i-1] ? run+1 : 1; if ((a[i] && run>2) || (!a[i] && run>3)) { ok=false; break; } }
+    if (ok) return a;
+  }
+  return [false,true,false,false,true,false,true,false,false,true,false,true,false,false,true,false];
+}
+function game1Intro(){
+  station('Station 1 von 4: Ernten');
+  app.innerHTML = `<div class="card">${head('harvest','Ernten')}
+    <p style="margin-top:.8rem">Gleich tauchen Äpfel im Baum auf. Tippe die schönen roten so schnell wie möglich an. Die braunen, faulen lässt du hängen.</p>
+    <button class="btn" id="g1">Bereit</button></div>`;
+  $('#g1').onclick = game1;
+}
+function game1(){
+  const order = harvestOrder(), N = order.length;
+  let round = 0, current = null, shownAt = 0, timer = null;
+  app.innerHTML = `${head('harvest','Ernten',`0 / ${N}`)}
+    <p class="task">Rote Äpfel antippen, faule hängen lassen.</p>
+    <div class="treewrap"><div class="crown" aria-hidden="true">${'<i></i>'.repeat(9)}</div><div class="tree">${Array.from({length:9},(_,i)=>`<button class="spot" data-i="${i}" aria-label="Ast ${i+1}"></button>`).join('')}</div></div>
+    <div class="trunk"></div><p class="toast" id="t"></p>`;
+  const spots = [...document.querySelectorAll('.spot')];
+  const say = t => $('#t').textContent = t;
+  const clear = () => { if (current) spots[current.i].innerHTML = ''; current = null; };
+  spots.forEach(s => s.addEventListener('pointerdown', e => {
+    notePointer(e);
+    if (!current || +s.dataset.i !== current.i) return;
+    const rt = performance.now() - shownAt;
+    clearTimeout(timer);
+    if (current.rotten){ D.rottenHits++; say('Faul! Der kommt nicht in die Presse.'); }
+    else { D.rts.push(rt); addApm(40); say('Gepflückt'); }
+    clear(); next();
+  }));
+  function next(){
+    if (round >= N) return setTimeout(game2Intro, 700);
+    setTimeout(show, rand(350, 1100));
+  }
+  function show(){
+    const rotten = order[round]; round++;
+    $('#r').textContent = `${round} / ${N}`;
+    let i; do { i = Math.floor(Math.random()*9); } while (current && i === current.i);
+    current = {i, rotten}; if (rotten) D.rottenTotal++;
+    spots[i].innerHTML = apple({rotten});
+    shownAt = performance.now();
+    timer = setTimeout(() => { if (!rotten){ D.misses++; say('Zu langsam'); } else say('Gut, hängen gelassen'); clear(); next(); }, 1400);
+  }
+  next();
+}
+
+/* ---------- Station 2: Marketing ---------- */
+const CITIES = [["Zürich",8.54,47.37],["Bern",7.45,46.95],["Basel",7.59,47.56],["Genf",6.14,46.2],["Lausanne",6.63,46.52],["Luzern",8.31,47.05],["St. Gallen",9.37,47.42],["Frauenfeld",8.9,47.56],["Weinfelden",9.11,47.57],["Kreuzlingen",9.17,47.65],["Arbon",9.43,47.52],["Amriswil",9.3,47.55],["Winterthur",8.72,47.5],["Schaffhausen",8.63,47.7],["Chur",9.53,46.85],["Lugano",8.95,46.0],["Bellinzona",9.02,46.19],["Locarno",8.8,46.17],["Sion",7.36,46.23],["Brig",7.99,46.32],["Fribourg",7.16,46.8],["Neuchâtel",6.93,46.99],["Biel",7.25,47.14],["Aarau",8.04,47.39],["Olten",7.9,47.35],["Solothurn",7.54,47.21],["Zug",8.52,47.17],["Thun",7.63,46.76],["Rapperswil",8.82,47.23],["Davos",9.84,46.8],["Glarus",9.07,47.04],["Altdorf",8.64,46.88],["Schwyz",8.65,47.02],["Herisau",9.28,47.39],["Appenzell",9.41,47.33],["Sarnen",8.25,46.9],["Delémont",7.34,47.36],["La Chaux-de-Fonds",6.83,47.1],["Yverdon",6.64,46.78],["Montreux",6.91,46.43]];
+const THURGAU = ["Frauenfeld","Weinfelden","Kreuzlingen","Arbon","Amriswil"];
+const BORDER = [[5.96,46.2],[6.12,46.48],[6.45,46.75],[6.75,47.0],[6.95,47.1],[7.0,47.35],[7.05,47.47],[7.4,47.43],[7.55,47.58],[7.7,47.55],[8.2,47.62],[8.45,47.58],[8.55,47.66],[8.62,47.81],[8.73,47.72],[8.86,47.665],[9.0,47.665],[9.17,47.655],[9.3,47.6],[9.38,47.57],[9.43,47.52],[9.49,47.48],[9.56,47.47],[9.62,47.4],[9.53,47.27],[9.5,47.06],[9.6,47.05],[9.87,46.95],[10.1,46.85],[10.45,46.95],[10.49,46.6],[10.3,46.55],[10.1,46.23],[9.95,46.38],[9.7,46.3],[9.5,46.5],[9.28,46.5],[9.25,46.3],[9.0,46.05],[9.05,45.88],[8.95,45.83],[8.8,46.0],[8.6,46.1],[8.45,46.25],[8.2,46.15],[8.05,46.0],[7.85,45.92],[7.55,45.98],[7.1,45.87],[6.85,46.0],[6.8,46.15],[6.82,46.39],[6.5,46.45],[6.25,46.35],[6.0,46.15]];
+const LAKES = [
+  // Bodensee mit Überlinger See
+  [[9.17,47.665],[9.11,47.71],[9.05,47.76],[9.0,47.8],[9.03,47.815],[9.11,47.78],[9.2,47.735],[9.28,47.69],[9.4,47.655],[9.5,47.62],[9.6,47.585],[9.68,47.555],[9.73,47.52],[9.7,47.49],[9.62,47.475],[9.54,47.48],[9.47,47.495],[9.41,47.545],[9.33,47.59],[9.24,47.635]],
+  // Untersee
+  [[9.15,47.672],[9.08,47.695],[9.0,47.715],[8.92,47.705],[8.86,47.672],[8.93,47.665],[9.02,47.668],[9.1,47.665]],
+  // Genfersee
+  [[6.15,46.21],[6.2,46.29],[6.27,46.38],[6.42,46.45],[6.56,46.5],[6.72,46.51],[6.87,46.46],[6.93,46.4],[6.82,46.39],[6.65,46.41],[6.5,46.42],[6.33,46.37],[6.24,46.29],[6.17,46.21]],
+  // Neuenburgersee
+  [[6.64,46.78],[6.75,46.86],[6.87,46.95],[6.97,47.0],[7.0,46.98],[6.92,46.91],[6.8,46.83],[6.68,46.77]],
+  // Zürichsee
+  [[8.54,47.365],[8.58,47.31],[8.66,47.26],[8.78,47.22],[8.85,47.215],[8.84,47.2],[8.75,47.21],[8.63,47.25],[8.56,47.3],[8.52,47.36]],
+  // Vierwaldstättersee, vereinfacht
+  [[8.3,47.05],[8.4,47.0],[8.5,46.99],[8.6,46.98],[8.6,46.95],[8.5,46.97],[8.38,46.98],[8.28,47.03]],
+  // Lago Maggiore, Schweizer Teil
+  [[8.8,46.18],[8.86,46.12],[8.75,46.0],[8.72,46.02],[8.8,46.12],[8.78,46.17]]
+];
+const px = ([lon,lat]) => [(lon-5.9)*100, (47.85-lat)*147];
+const unpx = (x,y) => [x/100+5.9, 47.85-y/147];
+const pts = arr => arr.map(px).map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+function inside(pt, poly){ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j]; if(((yi>pt[1])!==(yj>pt[1]))&&(pt[0]<(xj-xi)*(pt[1]-yi)/(yj-yi)+xi)) c=!c;} return c; }
+function nearest(lon,lat){
+  let best=null, bd=1e9;
+  for (const [n,x,y] of CITIES){ const d=Math.hypot((x-lon)*Math.cos(lat*Math.PI/180)*111,(y-lat)*111); if(d<bd){bd=d;best=n;} }
+  return {city:best, km:Math.round(bd)};
+}
+function game2Intro(){
+  station('Station 2 von 4: Marketing');
+  const labels = ["Zürich","Bern","Basel","Genf","Lugano","Chur","St. Gallen","Frauenfeld","Luzern","Sion"];
+  app.innerHTML = `<div class="card">${head('quiz','Marketing')}
+    <p style="margin-top:.8rem">Die Mosterei möchte dir Fragen aus deiner Region stellen. Wo spielst du gerade?</p>
+    <div class="row"><button class="btn green" id="gps">Standort freigeben</button><span class="muted">oder Punkt auf der Karte setzen und verschieben</span></div>
+    <svg class="map" id="map" viewBox="-10 -10 485 330" role="img" aria-label="Karte der Schweiz">
+      <polygon class="land" points="${pts(BORDER)}"/>
+      ${LAKES.map(l=>`<polygon class="lake" points="${pts(l)}"/>`).join('')}
+      ${CITIES.filter(c=>labels.includes(c[0])).map(c=>{const[x,y]=px([c[1],c[2]]);return `<circle class="city" cx="${x}" cy="${y}" r="2.6"/><text x="${x+5}" y="${y-4}">${c[0]}</text>`}).join('')}
+      <g id="pin"></g>
+    </svg>
+    <p class="toast" id="t"></p>
+    <div class="row" style="justify-content:space-between"><button class="link muted" id="skip">Lieber keine Angabe</button><button class="btn" id="confirm" disabled>Standort bestätigen</button></div>
+  </div>`;
+  const svg = $('#map'), border = BORDER.map(px);
+  let placed = null, dragging = false;
+  const toSvg = e => { const p = svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  const setPin = p => {
+    if (!inside([p.x,p.y], border)) return false;
+    placed = p;
+    $('#pin').innerHTML = `<g transform="translate(${p.x-11} ${p.y-26}) scale(.22)">${apple({fill:'#C42B3A'}).replace(/<\/?svg[^>]*>/g,'')}</g><circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#16261B"/>`;
+    $('#confirm').disabled = false; $('#t').textContent = 'Punkt gesetzt. Du kannst ihn noch verschieben.';
+    return true;
+  };
+  svg.addEventListener('pointerdown', e => {
+    notePointer(e);
+    if (!setPin(toSvg(e))){ $('#t').textContent = 'Setz den Punkt innerhalb der Schweiz.'; return; }
+    dragging = true; svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', e => { if (dragging) setPin(toSvg(e)); });
+  svg.addEventListener('pointerup', () => dragging = false);
+  $('#confirm').onclick = () => { const [lon,lat] = unpx(placed.x, placed.y); D.loc = {how:'map', lat, lon, ...nearest(lon,lat)}; quiz(); };
+  $('#gps').onclick = () => {
+    if (!navigator.geolocation || !window.isSecureContext){ $('#t').textContent = 'Die Freigabe ist hier nicht möglich. Setz den Punkt auf der Karte.'; return; }
+    $('#t').textContent = 'Standort wird abgefragt …';
+    navigator.geolocation.getCurrentPosition(p => {
+      const {latitude:lat, longitude:lon, accuracy} = p.coords;
+      D.loc = {how:'gps', lat, lon, accuracy:Math.round(accuracy), ...nearest(lon,lat)};
+      quiz();
+    }, err => {
+      const why = err.code === 1 ? 'Der Browser hat die Freigabe blockiert. Meist ist die Erlaubnis für diese Seite abgelehnt oder der Browser darf in den Systemeinstellungen keine Ortungsdienste nutzen.'
+                : err.code === 2 ? 'Das Gerät konnte keinen Standort bestimmen. Oft sind die Ortungsdienste im Betriebssystem ausgeschaltet oder es gibt kein WLAN und kein GPS.'
+                : 'Die Abfrage hat zu lange gedauert.';
+      $('#t').textContent = why + ' Setz den Punkt einfach auf der Karte.';
+    }, {timeout:12000, maximumAge:60000});
+  };
+  $('#skip').onclick = () => { D.loc = {how:'none'}; quiz(); };
+}
+
+const POOL = [
+  {q:'Welche dieser Sorten ist ein Apfel?', o:['Williams','Gala','Conference'], a:1},
+  {q:'Warum wird ein angeschnittener Apfel braun?', o:['Er trocknet aus','Stoffe im Apfel reagieren mit Sauerstoff','Das Licht bleicht ihn'], a:1},
+  {q:'Wie heisst vergorener Apfelsaft in der Schweiz oft?', o:['Saurer Most','Süssmost','Apfelschorle'], a:0},
+  {q:'Wie heisst unvergorener Apfelsaft in der Schweiz?', o:['Saurer Most','Süssmost','Träsch'], a:1},
+  {q:'Zu welcher Pflanzenfamilie gehört der Apfel?', o:['Nachtschattengewächse','Kürbisgewächse','Rosengewächse'], a:2},
+  {q:'Wann blühen Apfelbäume in der Schweiz meistens?', o:['Im April und Mai','Im Hochsommer','Im Oktober'], a:0},
+  {q:'Welche Tiere sind für die Bestäubung von Apfelblüten besonders wichtig?', o:['Ameisen','Bienen','Schnecken'], a:1},
+  {q:'Wie nennt man den Teil des Apfels, in dem die Kerne stecken?', o:['Kerngehäuse','Kelch','Stiel'], a:0},
+  {q:'Welcher Schnaps aus der Normandie wird aus Äpfeln gebrannt?', o:['Grappa','Calvados','Ouzo'], a:1},
+  {q:'Wie nennt man grosse, freistehende Obstbäume auf Wiesen?', o:['Hochstammbäume','Spalierbäume','Zwergbäume'], a:0},
+  {q:'Wo sitzen beim Apfel besonders viele Vitamine?', o:['Im Kerngehäuse','Direkt unter der Schale','Im Stiel'], a:1},
+  {q:'Womit wird aus Äpfeln Most gemacht?', o:['Mit einer Presse','Mit einem Sieb','Mit einem Dörrgerät'], a:0},
+  {q:'Warum sollte man Apfelkerne nicht in grossen Mengen essen?', o:['Sie quellen im Magen stark auf','Aus einem Stoff darin kann Blausäure entstehen','Sie sind unverdaulich hart'], a:1},
+  {q:'Welche Apfelsorte wurde in der Schweiz gezüchtet?', o:['Granny Smith','Pink Lady','Diwa'], a:2},
+  {q:'Aus welchem Land stammt die Sorte Granny Smith?', o:['Australien','Kanada','Japan'], a:0},
+  {q:'Woher stammt der Kulturapfel ursprünglich?', o:['Aus Skandinavien','Aus Zentralasien','Aus Südamerika'], a:1},
+  {q:'Welches Gas geben Äpfel ab, das anderes Obst schneller reifen lässt?', o:['Ethylen','Helium','Methan'], a:0},
+  {q:'Was ist «Feuerbrand» im Obstbau?', o:['Ein Erntefest','Eine Bakterienkrankheit','Eine Brennmethode für Schnaps'], a:1},
+  {q:'Wie viel Wasser enthält ein Apfel ungefähr?', o:['Etwa 50 Prozent','Etwa 85 Prozent','Etwa 20 Prozent'], a:1},
+  {q:'Warum schwimmt ein Apfel im Wasser?', o:['Er enthält viel Luft','Er ist innen hohl','Seine Schale ist gewachst'], a:0},
+  {q:'In welcher Jahreszeit werden die meisten Äpfel geerntet?', o:['Im Frühling','Im Herbst','Im Winter'], a:1},
+  {q:'Wie nennt man es, wenn ein Zweig einer Sorte auf einen anderen Baum gesetzt wird?', o:['Pfropfen','Mulchen','Schröpfen'], a:0},
+  {q:'Warum wächst aus einem Apfelkern meist kein Baum derselben Sorte?', o:['Der Kern trägt Erbgut von zwei Elternbäumen','Kerne sind steril','Sorten sind gesetzlich geschützt'], a:0},
+  {q:'Wer schoss seinem Sohn einen Apfel vom Kopf?', o:['Arnold Winkelried','Wilhelm Tell','Hans Waldmann'], a:1},
+  {q:'In welchem Märchen isst eine Prinzessin einen vergifteten Apfel?', o:['Dornröschen','Rapunzel','Schneewittchen'], a:2},
+  {q:'Welcher Physiker soll durch einen fallenden Apfel über die Schwerkraft nachgedacht haben?', o:['Isaac Newton','Albert Einstein','Galileo Galilei'], a:0},
+  {q:'Was bedeutet «Tafelobst»?', o:['Obst für die Mosterei','Obst zum Frischessen','Obst für den Schnaps'], a:1},
+  {q:'Wie bleiben Äpfel im Lager monatelang frisch?', o:['Kühl und mit wenig Sauerstoff','Warm und trocken','In Salzwasser'], a:0},
+  {q:'Was sind «Öpfelchüechli»?', o:['Ausgebackene Apfelringe','Getrocknete Apfelschnitze','Apfelmus mit Rahm'], a:0},
+  {q:'Was ist ein Apfelbutzen?', o:['Ein Apfelschädling','Der Rest mit dem Kerngehäuse','Eine Apfelsorte'], a:1}
+];
+function quiz(){
+  const inTG = D.loc && THURGAU.includes(D.loc.city) && D.loc.km < 30;
+  const regional = inTG
+    ? {q:'Du spielst ja mitten im Obstland. Welchen Übernamen hat der Thurgau?', o:['Mostindien','Apfelkanton','Saftland'], a:0}
+    : {q:'Welcher Kanton trägt wegen seiner vielen Obstbäume den Übernamen «Mostindien»?', o:['Wallis','Thurgau','Aargau'], a:1};
+  const Q = shuffle([...POOL]).slice(0,4);
+  Q.splice(2, 0, regional);
+  let i = 0, shownAt = 0;
+  const render = () => {
+    const x = Q[i];
+    app.innerHTML = `<div class="card">${head('quiz','Marketing',`Frage ${i+1} / ${Q.length}`)}
+      <p style="margin-top:.8rem"><strong>${x.q}</strong></p><div class="opts">${x.o.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join('')}</div></div>`;
+    shownAt = performance.now();
+    document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+      D.answerMs.push(performance.now() - shownAt);
+      const k = +b.dataset.k; D.quizTotal++;
+      document.querySelectorAll('.opt').forEach(o => o.disabled = true);
+      document.querySelectorAll('.opt')[x.a].classList.add('right');
+      if (k === x.a){ D.quizRight++; addApm(100); } else b.classList.add('wrong');
+      setTimeout(() => { i++; i < Q.length ? render() : game3Intro(); }, 1000);
+    });
+  };
+  render();
+}
+
+/* ---------- Station 3: Halbieren ---------- */
+function game3Intro(){
+  station('Station 3 von 4: Halbieren');
+  app.innerHTML = `<div class="card">${head('cut','Halbieren')}
+    <p style="margin-top:.8rem">Für die Presse müssen die Äpfel halbiert werden. Jeder Apfel liegt auf dem Brett. Teile ihn mit einem einzigen schnellen Schnitt, so wie es sich für dich natürlich anfühlt.</p>
+    <button class="btn" id="g3">Bereit</button></div>`;
+  $('#g3').onclick = game3;
+}
+function game3(){
+  const N = 8; let done = 0, el = null, ready = false;
+  const colors = ['#D23A3A','#C42B3A','#E8B23A','#7DA83A','#D9472F'];
+  app.innerHTML = `${head('cut','Halbieren',`0 / ${N}`)}
+    <p class="task">Mit einem schnellen Strich quer durch den Apfel wischen.</p>
+    <div class="board" id="b"><svg class="trail" id="trail"></svg></div><p class="toast" id="t"></p>`;
+  const b = $('#b'), trail = $('#trail');
+  function place(){
+    if (done >= N) return setTimeout(game4Intro, 600);
+    el = document.createElement('div'); el.className = 'apple';
+    const svg = appleTop(colors[done % colors.length]).replace('<svg', `<svg style="transform:rotate(${Math.round(rand(0,360))}deg)"`);
+    el.innerHTML = `<div class="half">${svg}</div><div class="half">${svg}</div>`;
+    b.appendChild(el); ready = true;
+  }
+  let s = null;
+  const rel = e => { const r = b.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; };
+  b.addEventListener('pointerdown', e => { notePointer(e); s = {...rel(e), type:e.pointerType||'mouse'}; b.setPointerCapture(e.pointerId); });
+  b.addEventListener('pointermove', e => { if (!s) return; const p = rel(e);
+    trail.innerHTML = `<line x1="${s.x}" y1="${s.y}" x2="${p.x}" y2="${p.y}" stroke="#FFF6D6" stroke-width="5" stroke-linecap="round" opacity=".9"/>`; });
+  b.addEventListener('pointerup', e => {
+    if (!s) return;
+    const p = rel(e), dx = p.x - s.x, dy = p.y - s.y, len = Math.hypot(dx,dy);
+    setTimeout(() => trail.innerHTML = '', 160);
+    const st = s; s = null;
+    if (len < 50 || !ready) { if (ready) $('#t').textContent = 'Wischen, nicht tippen'; return; }
+    const cx = b.clientWidth/2, cy = b.clientHeight/2, R = 66;
+    const t = Math.max(0, Math.min(1, ((cx-st.x)*dx + (cy-st.y)*dy)/(len*len)));
+    if (Math.hypot(st.x + t*dx - cx, st.y + t*dy - cy) > R){ $('#t').textContent = 'Knapp daneben, nochmals'; return; }
+    D.swipes.push({dx, dy, type:st.type});
+    ready = false; done++; D.cuts++; addApm(60);
+    $('#r').textContent = `${done} / ${N}`; $('#t').textContent = 'Sauber halbiert';
+    const th = Math.atan2(dy,dx), c = Math.cos(th), si = Math.sin(th), n = [-si, c];
+    el.querySelectorAll('.half').forEach((h, k) => {
+      const sg = k ? 1 : -1, d = [c*300, si*300], nn = [n[0]*sg*300, n[1]*sg*300];
+      const P = [[50+d[0],50+d[1]],[50+d[0]+nn[0],50+d[1]+nn[1]],[50-d[0]+nn[0],50-d[1]+nn[1]],[50-d[0],50-d[1]]];
+      h.style.clipPath = `polygon(${P.map(q=>q.map(v=>v.toFixed(1)+'%').join(' ')).join(',')})`;
+      requestAnimationFrame(() => requestAnimationFrame(() => { h.style.transform = `translate(${n[0]*sg*34}px,${n[1]*sg*34}px) rotate(${sg*8}deg)`; h.style.opacity = '.0'; }));
+    });
+    const old = el; setTimeout(() => { old.remove(); place(); }, 650);
+  });
+  place();
+}
+
+/* ---------- Station 4: Qualitätskontrolle ---------- */
+function sticker(kind, num){
+  const green = kind==='crit' || kind==='blankGreen';
+  const txt = kind==='normal' ? `<text x="50" y="63" text-anchor="middle" font-size="20" font-weight="900" fill="#16261B" font-family="system-ui">${num}</text>`
+            : kind==='crit' ? `<text x="50" y="63" text-anchor="middle" font-size="20" font-weight="900" fill="#C8603C" font-family="system-ui">${num}</text>` : '';
+  return `<defs><pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#5E8E34"/><circle cx="2" cy="2" r="1.4" fill="#6A9A3D"/><circle cx="5" cy="5" r="1.1" fill="#557F2F"/></pattern></defs>
+    <ellipse cx="50" cy="56" rx="21" ry="15" fill="${green?'url(#dots)':'#FFFFFF'}" stroke="#00000033"/>${txt}`;
+}
+function game4Intro(){
+  station('Station 4 von 4: Qualitätskontrolle');
+  app.innerHTML = `<div class="card">${head('qc','Qualitätskontrolle')}
+    <p style="margin-top:.8rem">Jeder Apfel braucht einen Kleber mit Sortennummer. Hat der Kleber eine Nummer, behältst du den Apfel. Ist der Kleber leer, sortierst du ihn aus.</p>
+    <button class="btn" id="g4">Bereit</button></div>`;
+  $('#g4').onclick = game4;
+}
+function game4(){
+  const items = shuffle([
+    ...[27,74,15].map(n=>({k:'normal',n})), ...[42,68,39].map(n=>({k:'crit',n})),
+    {k:'blankWhite'},{k:'blankWhite'},{k:'blankWhite'},{k:'blankGreen'},{k:'blankGreen'},{k:'blankGreen'}
+  ]);
+  let i = 0;
+  const render = () => {
+    const it = items[i];
+    app.innerHTML = `${head('qc','Qualitätskontrolle',`${i+1} / ${items.length}`)}
+      <p class="task"><strong>Kleber mit Nummer:</strong> behalten. <strong>Kleber ohne Nummer:</strong> aussortieren.</p>
+      <div class="qc card">${apple({fill: i%2 ? '#C42B3A' : '#D9472F', sticker: sticker(it.k, it.n)})}
+      <div class="row"><button class="btn green" data-a="keep">Behalten</button><button class="btn alt" data-a="out">Aussortieren</button></div></div>`;
+    document.querySelectorAll('[data-a]').forEach(b => b.onclick = e => {
+      const keep = b.dataset.a === 'keep', q = D.qc;
+      if (it.k==='normal'){ q.normal++; if (keep){ q.normalOk++; addApm(50);} }
+      else if (it.k==='crit'){ q.crit++; if (keep){ q.critKeep++; addApm(50);} }
+      else { q.blank++; if (!keep){ q.blankOk++; addApm(50);} }
+      i++; i < items.length ? render() : reveal();
+    });
+  };
+  render();
+}
+
+/* ---------- Auswertung ---------- */
+function analyse(){
+  const out = [];
+  // Ernten: Alter
+  if (D.rts.length >= 4){
+    const med = median(D.rts), age = Math.round(Math.max(18, Math.min(70, 20 + (med - 480)/7)));
+    out.push({src:'harvest', from:'Ernten', title:'Dein Alter', value:`ungefähr ${Math.max(16,age-6)} bis ${age+6} Jahre`,
+      how:`Gemessen wurde, wie schnell du die guten Äpfel angetippt hast. Dein mittlerer Wert: ${Math.round(med)} Millisekunden.`,
+      why:'Reaktionszeiten werden mit dem Alter im Schnitt langsamer. Müdigkeit, das Gerät oder Übung im Gamen verfälschen das aber stark.'});
+  } else out.push({src:'harvest', from:'Ernten', title:'Dein Alter', value:'nicht genug Daten', how:'Zu wenige Treffer für eine Schätzung.', why:'Auch mit wenig Daten ziehen manche Anbieter trotzdem Schlüsse.'});
+  // Ernten: Impulskontrolle
+  const rh = D.rottenHits;
+  out.push({src:'harvest', from:'Ernten', title:'Deine Impulskontrolle', value: rh===0 ? 'hoch, du lässt dich nicht hetzen' : rh<=2 ? 'meistens kontrolliert' : 'eher impulsiv',
+    how:`Du hast ${rh} von ${D.rottenTotal} faulen Äpfeln angetippt, obwohl du sie hängen lassen solltest.`,
+    why:'Unter Zeitdruck klickt jede und jeder mal daneben. Ob das etwas über den Charakter sagt, ist sehr fraglich. Trotzdem schliessen manche Werbe- und Bewerbungstools aus solchen Mustern auf die Persönlichkeit.'});
+  // Marketing: Standort
+  const L = D.loc || {how:'none'};
+  if (L.how==='gps') out.push({src:'quiz', from:'Marketing', title:'Dein Standort', value: L.km > 40 ? 'ausserhalb der Schweiz' : `in der Nähe von ${L.city}`,
+      how:`Du hast den Standort freigegeben. Genauigkeit laut Gerät: etwa ${L.accuracy} Meter.`,
+      why:'Das war die einzige Angabe, die du bewusst gemacht hast. Für die Quizfragen hätte die Mosterei sie gar nicht gebraucht.'});
+  else if (L.how==='map') out.push({src:'quiz', from:'Marketing', title:'Dein Standort', value:`in der Nähe von ${L.city}`,
+      how:'Du hast selbst einen Punkt auf der Karte gesetzt. Eine Quizfrage wurde danach angepasst.',
+      why:'Die Angabe kann frei erfunden sein. Ob sie stimmt, prüft niemand.'});
+  else { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    out.push({src:'quiz', from:'Marketing', title:'Dein Standort', value: tz==='Europe/Zurich' ? 'wahrscheinlich Schweiz' : `Zeitzone ${tz}`,
+      how:`Du hast keine Angabe gemacht. Zeitzone (${tz}) und Browsersprache (${navigator.language}) verraten die Region trotzdem.`,
+      why:'Verweigern schützt nur teilweise. Viele Merkmale fallen nebenbei an.'}); }
+  // Marketing: Entscheidungsstil
+  const am = median(D.answerMs);
+  out.push({src:'quiz', from:'Marketing', title:'Dein Entscheidungsstil', value: am < 3500 ? 'schnell und aus dem Bauch' : am < 8000 ? 'abwägend' : 'gründlich bis zögerlich',
+    how:`Gemessen wurde, wie lange du pro Frage überlegt hast: im Mittel ${(am/1000).toFixed(1)} Sekunden. Richtig waren ${D.quizRight} von ${D.quizTotal}.`,
+    why:'Lesetempo, Ablenkung oder die Sprache beeinflussen das stark. Ein Persönlichkeitsmerkmal lässt sich daraus kaum seriös ableiten.'});
+  // Halbieren: Händigkeit
+  const sw = D.swipes; let R = 0, Lf = 0, lr = 0, slash = 0, back = 0;
+  sw.forEach(({dx,dy}) => {
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (ax > .3*ay){ dx > 0 ? (R++, lr++) : Lf++; }
+    if (ax > .3*ay && ay > .3*ax){ dx*dy < 0 ? (R++, slash++) : (Lf++, back++); }
+  });
+  const mouse = sw.length && sw.every(s=>s.type==='mouse');
+  if (R + Lf >= 4){
+    const share = R/(R+Lf);
+    out.push({src:'cut', from:'Halbieren', title:'Deine Händigkeit', value: share >= .6 ? 'eher Rechtshänder:in' : share <= .4 ? 'eher Linkshänder:in' : 'nicht eindeutig',
+      how:`${lr} von ${sw.length} Schnitten gingen von links nach rechts. ${slash} Schnitte waren schräg wie «/», ${back} schräg wie «\\».`,
+      why:`Rechtshänder:innen schneiden häufiger von links nach rechts und eher schräg nach oben rechts. Bei Linkshänder:innen ist es umgekehrt.${mouse ? ' Du hast mit Maus oder Trackpad gespielt, damit ist der Schluss noch wackliger.' : ''}`});
+  } else out.push({src:'cut', from:'Halbieren', title:'Deine Händigkeit', value:'nicht genug Daten', how:'Die Schnitte waren fast alle senkrecht, daraus lässt sich wenig lesen.', why:'Wer anders spielt als erwartet, bringt das Modell durcheinander.'});
+  // Qualitätskontrolle: Farbsehen
+  const q = D.qc, nA = q.normal ? q.normalOk/q.normal : 0, bA = q.blank ? q.blankOk/q.blank : 0;
+  let cv = 'nicht auswertbar';
+  if (nA >= .66 && bA >= .66) cv = q.critKeep <= 1 ? 'Hinweis auf eine Rot-Grün-Sehschwäche' : 'keine Hinweise auf eine Rot-Grün-Sehschwäche';
+  out.push({src:'qc', from:'Qualitätskontrolle', title:'Dein Farbsehen', value:cv,
+    how:`Drei Kleber hatten rote Zahlen auf grünem Grund mit ähnlicher Helligkeit. Davon hast du ${q.critKeep} von ${q.crit} behalten.`,
+    why:'Wer Rot und Grün schlecht unterscheidet, sieht diese Zahlen kaum und sortiert die Äpfel aus. Gesundheitsdaten sind besonders schützenswert.'});
+  // AGB
+  out.push({src:'agb', from:'Nutzungsbedingungen', title:'Hast du die Bedingungen gelesen?', value: D.agbSecret ? 'ja, bis zum Schluss' : D.agbOpened ? 'geöffnet, aber nicht zu Ende gelesen' : 'nein, nicht einmal geöffnet',
+    how: (D.agbOpened ? `Du hattest die Bedingungen ${Math.round(D.agbMs/1000)} Sekunden offen. ` : 'Du hast zugestimmt, ohne sie zu öffnen. ') + 'Am Ende war ein Satz versteckt, der 1000 Äpfel pro Minute gebracht hätte.',
+    why:'Dort stand offen, dass Reaktionszeiten, Schnittrichtungen, Tab-Wechsel und Wahrnehmung ausgewertet werden.'});
+  return out;
+}
+
+async function passive(){
+  const ua = navigator.userAgent;
+  const os = /iPhone/.test(ua) ? 'iOS (iPhone)' : /iPad/.test(ua) || (/Mac/.test(ua) && navigator.maxTouchPoints>1) ? 'iPadOS' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'macOS' : /Windows/.test(ua) ? 'Windows' : /CrOS/.test(ua) ? 'ChromeOS' : /Linux/.test(ua) ? 'Linux' : 'unbekannt';
+  const br = /Edg\//.test(ua) ? 'Edge' : /Firefox\//.test(ua) ? 'Firefox' : /OPR\//.test(ua) ? 'Opera' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'unbekannt';
+  const now = new Date(), h = now.getHours();
+  const part = h<5?'mitten in der Nacht':h<11?'am Morgen':h<14?'über Mittag':h<18?'am Nachmittag':h<22?'am Abend':'spät in der Nacht';
+  const pt = Object.keys(D.pointerTypes);
+  const input = pt.includes('touch') ? 'Finger auf dem Touchscreen' : pt.includes('pen') ? 'Stift' : 'Maus oder Trackpad';
+  const mins = Math.max(1, Math.round((Date.now()-D.started)/60000));
+  const cm = D.travelPx / 37.8;
+  const list = [
+    `Betriebssystem: ${os}`,
+    `Browser: ${br}`,
+    `Bildschirm: ${screen.width} × ${screen.height} Pixel, Pixeldichte ${devicePixelRatio}`,
+    `Fenstergrösse: ${innerWidth} × ${innerHeight} Pixel`,
+    navigator.hardwareConcurrency ? `Prozessorkerne: ${navigator.hardwareConcurrency}` : null,
+    navigator.deviceMemory ? `Arbeitsspeicher: etwa ${navigator.deviceMemory} GB` : null,
+    navigator.connection && navigator.connection.effectiveType ? `Verbindung: ${navigator.connection.effectiveType.toUpperCase()}` : null,
+    `Sprachen im Browser: ${(navigator.languages||[navigator.language]).join(', ')}`,
+    `Zeitzone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`,
+    `Du spielst ${part}, an einem ${now.toLocaleDateString('de-CH',{weekday:'long'})}`,
+    `Eingabe: ${input}`,
+    `Weg von Maus oder Finger: etwa ${cm >= 100 ? (cm/100).toFixed(1)+' Meter' : Math.round(cm)+' Zentimeter'}`,
+    `Tab verlassen: ${D.tabSwitches} Mal`,
+    `Dunkelmodus: ${matchMedia('(prefers-color-scheme: dark)').matches ? 'ein' : 'aus'}`,
+    `Animationen reduziert: ${matchMedia('(prefers-reduced-motion: reduce)').matches ? 'ja' : 'nein'}`,
+    `Gekommen über: ${document.referrer ? new URL(document.referrer).hostname : 'direkten Link oder Lesezeichen'}`,
+    `Spieldauer: etwa ${mins} Minute${mins>1?'n':''}`
+  ];
+  try {
+    if (navigator.getBattery){ const b = await navigator.getBattery(); list.splice(6, 0, `Akku: ${Math.round(b.level*100)} Prozent, ${b.charging ? 'wird geladen' : 'nicht am Strom'}`); }
+  } catch(e){}
+  return list.filter(Boolean);
+}
+
+function reveal(){
+  station('Profil erstellt');
+  const facts = analyse(), verdict = Array(facts.length).fill(null);
+  app.innerHTML = `<section class="reveal">
+    <span class="stamp">Profil erstellt</span>
+    <h1>Eigentlich ging es nie um Most.</h1>
+    <p>Deine Mosterei hat ${apm.toLocaleString('de-CH')} Äpfel pro Minute geschafft. Nebenbei hat das Spiel etwas anderes gesammelt: Hinweise auf dich. Nur eine einzige Angabe hast du bewusst gemacht. Alles andere hast du beim Spielen verraten, ohne danach gefragt zu werden.</p>
+    <div class="facts">${facts.map((f,i)=>`
+      <article class="fact"><div class="src">${ICON[f.src]}Station ${f.from}</div><h3>${f.title}</h3><div class="big">${f.value}</div>
+        <dl><dt>So gemessen</dt><dd>${f.how}</dd><dt>Wie sicher?</dt><dd>${f.why}</dd></dl>
+        <div class="verdict" role="group" aria-label="Stimmt das?">Stimmt das?
+          <button aria-pressed="false" data-i="${i}" data-v="1">stimmt</button><button aria-pressed="false" data-i="${i}" data-v="0">stimmt nicht</button></div>
+      </article>`).join('')}</div>
+    <div class="tally" id="tally" aria-live="polite"></div>
+    <div class="card"><h3>Was dein Browser ohnehin verrät</h3>
+      <p class="muted">Dafür musstest du gar nichts tun. Jede Webseite kann das lesen.</p>
+      <ul class="passive" id="passive"><li>wird gelesen …</li></ul></div>
+    <p style="margin-top:1.5rem">Dieses Spiel hat nichts gespeichert und nichts verschickt. Alles lag nur im Arbeitsspeicher dieses Browser-Tabs und ist weg, sobald du ihn schliesst. Der Webserver, der die Seite ausliefert, sieht wie bei jeder Webseite trotzdem deine IP-Adresse. Bei vielen Apps und Games landen solche Daten dagegen auf fremden Servern, werden zusammengeführt und bleiben dort.</p>
+    <div class="row"><button class="btn" id="wipe">Daten löschen und neu spielen</button></div>
+    <div class="lehre"><h3>Zum Weiterdenken</h3><ol>
+      <li>Welche Angabe hat dich überrascht, und welche war falsch?</li>
+      <li>Was passiert, wenn ein Unternehmen mit einer falschen Annahme über dich weiterarbeitet und du sie nie zu sehen bekommst?</li>
+      <li>Wo begegnen dir solche versteckten Messungen im Alltag, etwa in Games, Social Media oder Lernplattformen?</li>
+      <li>Welche Fragen stellst du künftig an eine Lern-App, bevor du sie mit einer Klasse einsetzt?</li>
+    </ol></div>
+  </section>`;
+  window.scrollTo({top:0});
+  const tally = () => {
+    const answered = verdict.filter(v=>v!==null).length, wrong = verdict.filter(v=>v===0).length, open = facts.length - answered;
+    $('#tally').innerHTML = open
+      ? `Bilanz: <b>${wrong} von ${facts.length}</b> Annahmen waren laut dir falsch. Noch ${open} offen.`
+      : `Bilanz: <b>${wrong} von ${facts.length}</b> Annahmen waren laut dir falsch. Die Mosterei erfährt davon nichts. Ihr Profil von dir bleibt genau so, wie es ist.`;
+  };
+  tally();
+  document.querySelectorAll('.verdict button').forEach(b => b.onclick = () => {
+    b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true'); verdict[+b.dataset.i] = +b.dataset.v; tally();
+  });
+  passive().then(list => { $('#passive').innerHTML = list.map(x=>`<li>${x}</li>`).join(''); });
+  $('#wipe').onclick = () => { D = fresh(); apm = 0; addApm(0); $('#secret').textContent = SECRET; start(); window.scrollTo({top:0}); };
+}
+
+start();
+})();
+</script>
+</body>
+</html>
