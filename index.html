@@ -46,7 +46,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .juice{height:6px;background:var(--leaf)}
 .juice i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#F5D77A);transition:width .5s}
 
-main{max-width:880px;margin:0 auto;padding:1.5rem 1rem 4rem}
+main{max-width:880px;margin:0 auto;padding:2rem 1rem 4rem}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.4rem}
 .btn{background:var(--red);color:#fff;border:0;border-radius:999px;padding:.8rem 1.5rem;font-weight:700;font-size:1.05rem}
 .btn:disabled{opacity:.4;cursor:not-allowed}
@@ -146,6 +146,27 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .imp-body h4:first-child{margin-top:0}
 .imp-body address{font-style:normal}
 .imp-body a{color:inherit}
+.juice{position:relative}
+.goal{position:absolute;top:-2px;bottom:-2px;left:50%;width:3px;background:var(--red);border-radius:2px}
+.goal span{position:absolute;top:9px;left:50%;transform:translateX(-50%);font-size:.7rem;font-weight:700;color:var(--red);white-space:nowrap}
+.say{display:flex;gap:.7rem;align-items:flex-end;margin:.7rem 0}
+.say svg{width:64px;height:64px;flex:none}
+.bubble{background:var(--paper);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:.6rem .9rem;max-width:56ch}
+.card .bubble{background:var(--bg)}
+.bubble b{display:block;font-size:.8rem;color:var(--soft)}
+.route{display:flex;align-items:flex-start;margin:0 0 1.2rem;padding:0;list-style:none}
+.route li{flex:1;text-align:center;position:relative;font-size:.78rem;color:var(--soft)}
+.route li::before{content:"";position:absolute;top:15px;left:-50%;width:100%;height:4px;background:var(--line);z-index:0}
+.route li:first-child::before{display:none}
+.route li.done::before,.route li.now::before{background:var(--gold)}
+.route .dot{position:relative;z-index:1;width:34px;height:34px;margin:0 auto .3rem;border-radius:50%;background:var(--paper);border:3px solid var(--line);display:grid;place-items:center}
+.route li.done .dot{background:var(--gold);border-color:var(--gold)}
+.route li.now .dot{border-color:var(--red);background:var(--paper)}
+.route li.now .dot svg{width:26px;height:26px}
+.route li.now{color:var(--ink);font-weight:700}
+.gain{display:inline-block;background:var(--gold);color:#16261B;font-weight:800;border-radius:999px;padding:.2rem .8rem;margin-bottom:.6rem}
+.name{font:inherit;padding:.7rem 1rem;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);width:min(320px,100%)}
+.bottle{display:block;width:min(220px,55vw);margin:0 auto}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -206,7 +227,7 @@ const fresh = () => ({
   loc:null, quizRight:0, quizTotal:0, answerMs:[],
   swipes:[], cuts:0,
   qc:{normal:0,normalOk:0,blank:0,blankOk:0,crit:0,critKeep:0},
-  pointerTypes:{}, tabSwitches:0, travelPx:0
+  pointerTypes:{}, tabSwitches:0, travelPx:0, name:''
 });
 let D = fresh(), apm = 0;
 const app = document.getElementById('app');
@@ -270,6 +291,25 @@ function treeArt(){
 }
 const head = (icon, title, step) => `<div class="stage-head"><h2>${ICON[icon]}${title}</h2>${step?`<span class="step" id="r">${step}</span>`:''}</div>`;
 
+/* ---------- Figuren, Sprechblasen, Weg ---------- */
+const RUEDI = `<svg viewBox="286 74 108 118" aria-hidden="true"><rect x="331" y="148" width="18" height="24" fill="#D9A27E"/><path d="M292 255 L296 196 Q302 170 328 166 L352 166 Q378 170 384 196 L388 255 Z" fill="#C9C2B0"/><path d="M328 166 L340 180 L352 166 Z" fill="#D9A27E"/><path d="M314 255 L314 196 L366 196 L366 255 Z" fill="#3B5E8C"/><path d="M318 196 L322 168 M362 196 L358 168" stroke="#3B5E8C" stroke-width="6" stroke-linecap="round"/><circle cx="340" cy="125" r="32" fill="#D9A27E"/><path d="M306 112 Q308 84 340 84 Q372 84 374 112 Z" fill="#C42B3A"/><rect x="304" y="108" width="74" height="8" rx="4" fill="#9A1F2C"/><circle cx="328" cy="128" r="3" fill="#2A2A2A"/><circle cx="352" cy="128" r="3" fill="#2A2A2A"/><path d="M322 141 Q331 135 340 140 Q349 135 358 141 Q349 147 340 143 Q331 147 322 141 Z" fill="#6B4A2E"/><path d="M332 150 Q340 155 348 150" stroke="#7A3E2E" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`;
+const GRAVI = `<svg viewBox="464 72 172 166" aria-hidden="true"><path d="M550 108 C522 88 486 102 490 140 C494 182 522 210 550 198 C578 210 606 182 610 140 C614 102 578 88 550 108 Z" fill="#E6C24A"/><path d="M520 112 C512 140 516 170 528 195M538 106 C532 140 534 175 542 200M566 106 C572 140 570 175 562 200M584 114 C592 140 590 168 578 194" stroke="#D2452F" stroke-width="5" fill="none" stroke-linecap="round" opacity=".75"/><path d="M550 108 C550 94 554 84 560 78" stroke="#5A3A1E" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M556 92 C568 78 588 80 594 86 C584 98 566 100 556 92 Z" fill="#3F7A35"/><ellipse cx="536" cy="145" rx="9" ry="11" fill="#fff"/><ellipse cx="564" cy="145" rx="9" ry="11" fill="#fff"/><circle cx="538" cy="147" r="5" fill="#2A2A2A"/><circle cx="566" cy="147" r="5" fill="#2A2A2A"/><circle cx="540" cy="144" r="1.6" fill="#fff"/><circle cx="568" cy="144" r="1.6" fill="#fff"/><path d="M538 168 Q550 180 562 168" stroke="#5A2A1E" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M492 150 Q474 140 470 124M608 150 Q626 158 630 172M535 205 L530 228 L520 230M565 205 L570 228 L580 230" stroke="#5A3A1E" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+const say = (who, text) => `<div class="say">${who==='ruedi'?RUEDI:GRAVI}<div class="bubble"><b>${who==='ruedi'?'Ruedi, Pressenmeister':'Gravi'}</b>${text}</div></div>`;
+const STOPS = ['Baum','Hofladen','Küche','Förderband','Presse'];
+const route = now => `<ol class="route" aria-label="Weg durch die Mosterei">${STOPS.map((n,i)=>`<li class="${i<now?'done':i===now?'now':''}" ${i===now?'aria-current="step"':''}><div class="dot">${i===now?ICON.harvest:''}</div>${n}</li>`).join('')}</ol>`;
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let stationStart = 0;
+function transition(stop, summary, lines, btn, next){
+  const gain = apm - stationStart; stationStart = apm;
+  station(stop < 4 ? `Station ${stop+1} von 4: ${['Ernten','Marketing','Halbieren','Qualitätskontrolle'][stop]}` : 'Ab in die Presse');
+  app.innerHTML = `<div class="card">${route(stop)}
+    ${summary ? `<span class="gain">${summary}${gain ? ` · +${gain.toLocaleString('de-CH')} Äpfel pro Minute` : ''}</span>` : ''}
+    ${lines.map(([w,t]) => say(w,t)).join('')}
+    <div class="row" style="margin-top:1rem"><button class="btn" id="next">${btn}</button></div></div>`;
+  $('#next').onclick = next;
+  window.scrollTo({top:0});
+}
+
 /* ---------- Start ---------- */
 function start(){
   station('Mosterei bereit');
@@ -277,7 +317,8 @@ function start(){
   <section class="hero">
     <div>
       <h1>Die Mosterei braucht dich.</h1>
-      <p>Die Bäume hängen voll und die Presse läuft. Hilf mit, damit möglichst viele Äpfel pro Minute zu Most werden. Vier Stationen, etwa fünf Minuten.</p>
+      ${say('ruedi','Grüezi! Morgen ist Herbstmarkt in Weinfelden, und die Bäume hängen voll. Hilfst du mir, damit unsere Presse möglichst viele Äpfel pro Minute schafft?')}
+      ${say('gravi','Ich bin Gravi, ein Gravensteiner. Ich zeig dir den Weg durch die Mosterei. Dauert etwa fünf Minuten.')}
       <ul class="stations">
         <li>${ICON.harvest}Ernten: nur die guten Äpfel pflücken</li>
         <li>${ICON.quiz}Marketing: ein kurzes Apfelquiz</li>
@@ -316,11 +357,11 @@ function harvestOrder(){
   return [false,true,false,false,true,false,true,false,false,true,false,true,false,false,true,false];
 }
 function game1Intro(){
-  station('Station 1 von 4: Ernten');
-  app.innerHTML = `<div class="card">${head('harvest','Ernten')}
-    <p style="margin-top:.8rem">Gleich tauchen Äpfel im Baum auf. Tippe die schönen roten so schnell wie möglich an. Die braunen, faulen lässt du hängen.</p>
-    <button class="btn" id="g1">Bereit</button></div>`;
-  $('#g1').onclick = game1;
+  stationStart = apm;
+  transition(0, null, [
+    ['ruedi','So, dann fangen wir beim Baum an. Gleich tauchen Äpfel auf. Pflück die schönen roten, so schnell du kannst. Die faulen lässt du hängen.'],
+    ['gravi','Die braunen erkennst du am Wurm. Glaub mir, die willst du nicht im Most.']
+  ], 'Los geht’s', game1);
 }
 function game1(){
   const order = harvestOrder(), N = order.length;
@@ -342,7 +383,10 @@ function game1(){
     clear(); next();
   }));
   function next(){
-    if (round >= N) return setTimeout(game2Intro, 700);
+    if (round >= N) return setTimeout(() => transition(1, 'Ernte erledigt', [
+      ['gravi','Gut gepflückt! Jetzt bringen wir die Äpfel in den Hofladen.'],
+      ['ruedi','Im Laden wollen die Leute immer wissen, woher unser Most kommt. Und wir wollen wissen, woher sie kommen. Sag mir kurz, wo du bist, dann stelle ich dir ein paar Fragen dazu.']
+    ], 'Zum Hofladen', game2Intro), 700);
     setTimeout(show, rand(350, 1100));
   }
   function show(){
@@ -390,7 +434,7 @@ function game2Intro(){
   station('Station 2 von 4: Marketing');
   const labels = ["Zürich","Bern","Basel","Genf","Lugano","Chur","St. Gallen","Frauenfeld","Luzern","Sion"];
   app.innerHTML = `<div class="card">${head('quiz','Marketing')}
-    <p style="margin-top:.8rem">Die Mosterei möchte dir Fragen aus deiner Region stellen. Wo spielst du gerade?</p>
+    <p style="margin-top:.8rem">Wo spielst du gerade?</p>
     <div class="row"><button class="btn green" id="gps">Standort freigeben</button><span class="muted">oder Punkt auf der Karte setzen und verschieben</span></div>
     <svg class="map" id="map" viewBox="-10 -10 485 330" role="img" aria-label="Karte der Schweiz">
       <polygon class="land" points="${pts(BORDER)}"/>
@@ -487,7 +531,10 @@ function quiz(){
       document.querySelectorAll('.opt').forEach(o => o.disabled = true);
       document.querySelectorAll('.opt')[x.a].classList.add('right');
       if (k === x.a){ D.quizRight++; addApm(100); } else b.classList.add('wrong');
-      setTimeout(() => { i++; i < Q.length ? render() : game3Intro(); }, 1000);
+      setTimeout(() => { i++; i < Q.length ? render() : transition(2, `Quiz erledigt: ${D.quizRight} von ${D.quizTotal} richtig`, [
+        ['ruedi','Merci! In der Küche halbieren wir die Äpfel für die Presse. Ein schneller Schnitt pro Apfel, so wie es sich für dich richtig anfühlt.'],
+        ['gravi','Jetzt wird’s scharf. Ich warte lieber draussen.']
+      ], 'Ab in die Küche', game3); }, 1000);
     });
   };
   render();
@@ -509,7 +556,10 @@ function game3(){
     <div class="board" id="b"><svg class="trail" id="trail"></svg></div><p class="toast" id="t"></p>`;
   const b = $('#b'), trail = $('#trail');
   function place(){
-    if (done >= N) return setTimeout(game4Intro, 600);
+    if (done >= N) return setTimeout(() => transition(3, `${N} Äpfel halbiert`, [
+      ['gravi','Puh, alle noch ganz? Ich schon.'],
+      ['ruedi','Letzte Station vor der Presse. Jeder Apfel braucht einen Kleber mit Sortennummer. Hat der Kleber eine Nummer, behältst du den Apfel. Ist er leer, sortierst du ihn aus.']
+    ], 'Zum Förderband', game4), 600);
     el = document.createElement('div'); el.className = 'apple';
     const svg = appleTop(colors[done % colors.length]).replace('<svg', `<svg style="transform:rotate(${Math.round(rand(0,360))}deg)"`);
     el.innerHTML = `<div class="half">${svg}</div><div class="half">${svg}</div>`;
@@ -576,15 +626,58 @@ function game4(){
       if (it.k==='normal'){ q.normal++; if (keep){ q.normalOk++; addApm(50);} }
       else if (it.k==='crit'){ q.crit++; if (keep){ q.critKeep++; addApm(50);} }
       else { q.blank++; if (!keep){ q.blankOk++; addApm(50);} }
-      i++; i < items.length ? render() : reveal();
+      i++; i < items.length ? render() : finale();
     });
   };
   render();
 }
 
+/* ---------- Finale ---------- */
+function bottle(name){
+  const lines = name ? ['abgefüllt für', name] : ['Dein', 'Öpfelmeister-Most'];
+  return `<svg class="bottle" viewBox="0 0 120 260" role="img" aria-label="Mostflasche mit Etikett">
+    <rect x="48" y="6" width="24" height="14" rx="3" fill="#C42B3A"/>
+    <path d="M50 20h20v40c0 10 26 22 26 48v130c0 8-6 14-14 14H38c-8 0-14-6-14-14V108c0-26 26-38 26-48z" fill="#E8B23A" opacity=".9"/>
+    <path d="M50 20h20v40c0 10 26 22 26 48v130c0 8-6 14-14 14H38c-8 0-14-6-14-14V108c0-26 26-38 26-48z" fill="none" stroke="#9A6A3D" stroke-width="2.5"/>
+    <path d="M34 116c0-14 8-22 14-28" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".45"/>
+    <rect x="22" y="128" width="76" height="86" rx="6" fill="#FBF7EA" stroke="#9A6A3D" stroke-width="1.5"/>
+    <g transform="translate(48 132) scale(.24)">${apple({fill:'#C42B3A'}).replace(/<\/?svg[^>]*>/g,'')}</g>
+    <text x="60" y="170" text-anchor="middle" font-family="system-ui" font-size="9" font-weight="800" fill="#1F3B2C">ÖPFELMEISTER</text>
+    <text x="60" y="186" text-anchor="middle" font-family="system-ui" font-size="8" fill="#4C5E50">${esc(lines[0])}</text>
+    <text x="60" y="200" text-anchor="middle" font-family="system-ui" font-size="${lines[1].length>14?8:10}" font-weight="700" fill="#16261B">${esc(lines[1].slice(0,22))}</text>
+  </svg>`;
+}
+function finale(){
+  const gain = apm - stationStart; stationStart = apm;
+  station('Ab in die Presse');
+  app.innerHTML = `<div class="card">${route(4)}
+    <span class="gain">Qualitätskontrolle erledigt${gain ? ` · +${gain.toLocaleString('de-CH')} Äpfel pro Minute` : ''}</span>
+    ${say('ruedi','Ab in die Presse! Wenn du willst, klebe ich deinen Namen aufs Etikett. Dann weiss am Markt jede und jeder, wer diesen Most gemacht hat.')}
+    <div class="row" style="margin-top:1rem"><input class="name" id="name" maxlength="22" placeholder="Dein Name (freiwillig)" aria-label="Name für das Etikett" autocomplete="off">
+    <button class="btn" id="print">Etikett drucken</button><button class="link muted" id="noname">Ohne Namen</button></div></div>`;
+  window.scrollTo({top:0});
+  const go = name => { D.name = name; showBottle(); };
+  $('#print').onclick = () => go($('#name').value.trim());
+  $('#name').onkeydown = e => { if (e.key==='Enter') go($('#name').value.trim()); };
+  $('#noname').onclick = () => go('');
+}
+function showBottle(){
+  station('Bereit für den Herbstmarkt');
+  app.innerHTML = `<div class="card" style="text-align:center">${route(5)}
+    ${bottle(D.name)}
+    <p style="margin:1rem auto;font-weight:700">${apm.toLocaleString('de-CH')} Äpfel pro Minute, bereit für den Herbstmarkt.</p>
+    <div style="text-align:left">${say('gravi','Das ist der beste Most der Saison! Ich bin ein bisschen stolz auf dich.')}
+    ${say('ruedi','Merci vielmal für deine Hilfe. Ah, und noch etwas …')}</div>
+    <div class="row" style="justify-content:center;margin-top:1rem"><button class="btn" id="what">Was denn?</button></div></div>`;
+  $('#what').onclick = reveal;
+}
+
 /* ---------- Auswertung ---------- */
 function analyse(){
   const out = [];
+  if (D.name) out.push({src:'agb', from:'Presse', title:'Dein Name', value:esc(D.name),
+    how:'Du hast ihn freiwillig eingegeben, für ein Etikett auf einer Flasche, die es nicht gibt.',
+    why:'Mit einem Namen werden alle anderen Angaben zu einem persönlichen Profil. Ob der Name echt ist, weiss die Mosterei nicht.'});
   // Ernten: Alter
   if (D.rts.length >= 4){
     const med = median(D.rts), age = Math.round(Math.max(18, Math.min(70, 20 + (med - 480)/7)));
@@ -601,7 +694,7 @@ function analyse(){
   const L = D.loc || {how:'none'};
   if (L.how==='gps') out.push({src:'quiz', from:'Marketing', title:'Dein Standort', value: L.km > 40 ? 'ausserhalb der Schweiz' : `in der Nähe von ${L.city}`,
       how:`Du hast den Standort freigegeben. Genauigkeit laut Gerät: etwa ${L.accuracy} Meter.`,
-      why:'Das war die einzige Angabe, die du bewusst gemacht hast. Für die Quizfragen hätte die Mosterei sie gar nicht gebraucht.'});
+      why:'Diese Angabe hast du bewusst gemacht. Für ein paar Quizfragen hätte die Mosterei sie aber gar nicht gebraucht.'});
   else if (L.how==='map') out.push({src:'quiz', from:'Marketing', title:'Dein Standort', value:`in der Nähe von ${L.city}`,
       how:'Du hast selbst einen Punkt auf der Karte gesetzt. Eine Quizfrage wurde danach angepasst.',
       why:'Die Angabe kann frei erfunden sein. Ob sie stimmt, prüft niemand.'});
@@ -680,10 +773,13 @@ async function passive(){
 function reveal(){
   station('Profil erstellt');
   const facts = analyse(), verdict = Array(facts.length).fill(null);
+  const nC = (D.loc && D.loc.how !== 'none' ? 1 : 0) + (D.name ? 1 : 0);
+  const conscious = nC === 0 ? 'Bewusst angegeben hast du nichts. ' : nC === 1 ? 'Nur eine einzige Angabe hast du bewusst gemacht. ' : 'Nur zwei Angaben hast du bewusst gemacht: deinen Standort und deinen Namen. ';
   app.innerHTML = `<section class="reveal">
     <span class="stamp">Profil erstellt</span>
     <h1>Eigentlich ging es nie um Most.</h1>
-    <p>Deine Mosterei hat ${apm.toLocaleString('de-CH')} Äpfel pro Minute geschafft. Nebenbei hat das Spiel etwas anderes gesammelt: Hinweise auf dich. Nur eine einzige Angabe hast du bewusst gemacht. Alles andere hast du beim Spielen verraten, ohne danach gefragt zu werden.</p>
+    ${say('ruedi','Während du gearbeitet hast, habe ich mir ein paar Notizen über dich gemacht. Möchtest du sie sehen?')}
+    <p>Deine Mosterei hat ${apm.toLocaleString('de-CH')} Äpfel pro Minute geschafft. Nebenbei hat das Spiel etwas anderes gesammelt: Hinweise auf dich. ${conscious}Alles andere hast du beim Spielen verraten, ohne danach gefragt zu werden.</p>
     <div class="facts">${facts.map((f,i)=>`
       <article class="fact"><div class="src">${ICON[f.src]}Station ${f.from}</div><h3>${f.title}</h3><div class="big">${f.value}</div>
         <dl><dt>So gemessen</dt><dd>${f.how}</dd><dt>Wie sicher?</dt><dd>${f.why}</dd></dl>
@@ -716,7 +812,7 @@ function reveal(){
     b.setAttribute('aria-pressed','true'); verdict[+b.dataset.i] = +b.dataset.v; tally();
   });
   passive().then(list => { $('#passive').innerHTML = list.map(x=>`<li>${x}</li>`).join(''); });
-  $('#wipe').onclick = () => { D = fresh(); apm = 0; addApm(0); $('#secret').textContent = SECRET; start(); window.scrollTo({top:0}); };
+  $('#wipe').onclick = () => { D = fresh(); apm = 0; stationStart = 0; addApm(0); $('#secret').textContent = SECRET; start(); window.scrollTo({top:0}); };
 }
 
 start();
